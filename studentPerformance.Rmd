@@ -1,0 +1,69 @@
+---
+title: "Project1 - Model Linear"
+author: "Fauzan Adzhima Alamsyah"
+date: "2024-09-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,
+
+tidy.opts=list(width.cutoff=60),
+tidy=TRUE)
+
+options(scipen = 9999)
+rm(list=ls())
+```
+
+```{r}
+library(dplyr)
+library(leaps)
+library(GGally)
+library(MASS)
+library(lmtest)
+library(caTools)
+```
+
+```{r}
+students <- read.csv("data_input/StudentPerformanceFactors.csv")
+hist(students$Exam_Score, breaks=20)
+hist(students$Hours_Studied)
+```
+```{r}
+students
+```
+```{r}
+students_new <- slice(students,1:200)
+summary(students_new[c("Hours_Studied","Exam_Score")])
+```
+
+```{r}
+set.seed(123)
+split <- sample.split(students_new$Exam_Score, SplitRatio = 0.8)
+students_train <- subset(students_new, split == TRUE)
+students_test <- subset(students_new, split == FALSE)
+```
+
+```{r}
+max(students_train$Hours_Studied)
+students_test
+```
+
+domain variabel prediktor = [4,36]
+
+```{r}
+regressor <- lm(formula = Exam_Score ~ Hours_Studied , data = students_train)
+summary(regressor)
+```
+
+
+```{r}
+y_pred <- predict(regressor, newdata = students_test)
+y_pred
+```
+```{r}
+new_data <- data.frame(Hours_Studied = c(11,17))
+predictions <- predict(regressor, newdata = new_data)
+predictions
+```
+
