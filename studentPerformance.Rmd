@@ -67,3 +67,26 @@ predictions <- predict(regressor, newdata = new_data)
 predictions
 ```
 
+```{r}
+data_test <- data.frame(Hours_Studied = c(11))
+predict(regressor, newdata = data_test, interval = "prediction", level = 0.95)
+```
+
+```{r}
+# Menghitung koefisien korelasi
+correlation <- cor(students_train$Hours_Studied, students_train$Exam_Score)
+
+# Menghitung standar deviasi dari Hours_Studied dan Exam_Score
+std_hours <- sd(students_train$Hours_Studied)
+std_exam <- sd(students_train$Exam_Score)
+
+# Verifikasi kemiringan dengan koefisien korelasi
+calculated_slope <- correlation * (std_exam / std_hours)
+
+# Menampilkan hasil
+cat("Koefisien Korelasi (r):", correlation, "\n")
+cat("Kemiringan Garis Regresi Berdasarkan Korelasi:", calculated_slope, "\n")
+cat("Kemiringan Garis Regresi dari Model:", coef(regressor)[2], "\n")
+
+```
+
