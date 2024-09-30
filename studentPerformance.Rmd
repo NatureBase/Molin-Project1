@@ -51,6 +51,8 @@ students_test
 
 domain variabel prediktor = [4,36]
 
+## model data 80% pertama
+
 ```{r}
 regressor <- lm(formula = Exam_Score ~ Hours_Studied , data = students_train)
 summary(regressor)
@@ -84,9 +86,109 @@ std_exam <- sd(students_train$Exam_Score)
 calculated_slope <- correlation * (std_exam / std_hours)
 
 # Menampilkan hasil
+cat("Standar Deviasi dari Hours_Studied:",std_hours,"\n")
+cat("Standar Deviasi dari Exam_Score:",std_exam,"\n")
 cat("Koefisien Korelasi (r):", correlation, "\n")
 cat("Kemiringan Garis Regresi Berdasarkan Korelasi:", calculated_slope, "\n")
 cat("Kemiringan Garis Regresi dari Model:", coef(regressor)[2], "\n")
 
 ```
+```{r}
+4.548*4.548
+```
 
+```{r}
+set.seed(728)
+split <- sample.split(students_new$Exam_Score, SplitRatio = 0.8)
+data2 <- subset(students_new, split == TRUE)
+#students_test <- subset(students_new, split == FALSE)
+```
+
+## model data 80% kedua
+
+```{r}
+regressor1 <- lm(formula = Exam_Score ~ Hours_Studied , data = data2)
+summary(regressor1)
+```
+
+
+```{r}
+0.27414 - 0.25625
+```
+
+## model data 200 lengkap
+
+```{r}
+regressor2 <- lm(formula = Exam_Score ~ Hours_Studied , data = students_new)
+summary(regressor2)
+```
+
+```{r}
+# Scatter Plot 
+plot(students_train$Hours_Studied,
+     students_train$Exam_Score,
+     xlab = "Hours_Studied",
+     ylab = "Exam_Score",
+     main = "Plot Regresi Exam_Score ~ Hours_Studied", pch = 20)
+
+# Garis Regresi
+abline(regressor,
+       col = "red",
+       lwd = 2)
+
+legend("bottomright",
+       legend = "Garis Regresi",
+       col = "blue",
+       lwd = 2,
+       bty = "n")
+
+```
+
+
+```{r}
+head(regressor$residual)
+head(resid(regressor))
+plot(regressor$residual)
+plot(regressor, 1)
+hist(regressor$residual)
+```
+
+
+```{r}
+predict(regressor, newdata = data.frame(Hours_Studied = c(11)), interval = "confidence", level = 0.95)
+
+```
+
+
+```{r}
+
+# Ambil residuals
+residuals <- regressor$residuals
+
+# Hitung variansi residuals
+error_variance <- var(residuals)
+
+# Cetak variansi error
+print(error_variance)
+
+```
+
+
+```{r}
+# Mengambil MSE dari ringkasan model
+mse <- summary(regressor)$sigma^2
+cat("Variansi Error (σ²):", mse, "\n")
+
+```
+
+
+```{r}
+# Mengambil standard error untuk koefisien hp
+se_hp <- summary(regressor)$coefficients["Hours_Studied", "Std. Error"]
+
+# Menghitung variansi
+variance_hp <- se_hp^2
+
+cat("Variansi koefisien Hours_Studied (dari Std. Error):", variance_hp, "\n")
+
+```
